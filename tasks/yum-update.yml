@@ -1,0 +1,6 @@
+---
+- name: Update yum cache
+  become: true
+  yum:
+    name: '*'
+    state: latest

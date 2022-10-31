@@ -1,0 +1,15 @@
+---
+- name: Check if takserver_db_setup.done exists
+  stat:
+    path: takserver_db_setup.done
+  register: takserver_db_setup
+
+- name: Setup TAK DB
+  shell: /opt/tak/db-utils/takserver-setup-db.sh
+  when: not takserver_db_setup.stat.exists
+
+- name: Touch takserver_db_setup.done
+  file: 
+    path: takserver_db_setup.done
+    state: touch
+  when: not takserver_db_setup.stat.exists

@@ -1,0 +1,29 @@
+---
+- name: Install TAK Server
+  hosts: all
+  tasks:
+    - name: Linux | Prerequisite | Increases TCP connection limit
+      import_tasks: update-ulimit.yml
+
+    - name: Linux | Prerequisite | Update yum cache
+      import_tasks: yum-update.yml
+
+    - name: Linux | Prerequisite | Install EPEL
+      import_tasks: install-epel.yml
+
+    - name: Linux | Prerequisite | Update yum cache (after adding EPEL)
+      import_tasks: yum-update.yml
+
+    - name: PostgreSQL | Install
+      import_tasks: install-psql.yml
+
+    - name: TAK Server | Install
+      import_tasks: install-takserver.yml
+
+    - name: TAK Server | Setup DB
+      import_tasks: setup-takserver-db.yml
+
+    - name: TAK Server | Enable & start service
+      import_tasks: enable-start-takserver.yml
+
+

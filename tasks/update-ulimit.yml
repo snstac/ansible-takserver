@@ -1,0 +1,12 @@
+---
+- name: Increase PAM nofile limit to 32768
+  become: true
+  pam_limits:
+    domain: '*'
+    limit_type: soft
+    limit_item: nofile
+    value: '32768'
+
+- name: Reload all system config settings
+  become: true
+  shell: sysctl --system
