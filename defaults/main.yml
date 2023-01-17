@@ -1,0 +1,4 @@
+takserver_rpm: |
+  You must specify the TAK Server RPM in the
+  takserver_rpm variable.
+  

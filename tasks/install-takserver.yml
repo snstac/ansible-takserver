@@ -1,10 +1,10 @@
 ---
 - name: Copy TAK Server RPM
   copy:
-    src: takserver-4.7-RELEASE20.noarch.rpm
-    dest: takserver-4.7-RELEASE20.noarch.rpm
+    src: "{{ takserver_rpm }}"
+    dest: "{{ takserver_rpm }}"
 
 - name: Install TAK Server
   yum:
-    name: takserver-4.7-RELEASE20.noarch.rpm
+    name: "{{ takserver_rpm }}"
     state: latest

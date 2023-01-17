@@ -1,15 +1,9 @@
 ---
-- name: Check if takserver_db_setup.done exists
+- name: Check if TAK PostgreSQL Database exists
   stat:
-    path: takserver_db_setup.done
-  register: takserver_db_setup
+    path: /var/lib/pgsql/10/data/
+  register: takserver_db_data
 
-- name: Setup TAK DB
+- name: Setup TAK PostgreSQL Database
   shell: /opt/tak/db-utils/takserver-setup-db.sh
-  when: not takserver_db_setup.stat.exists
-
-- name: Touch takserver_db_setup.done
-  file: 
-    path: takserver_db_setup.done
-    state: touch
-  when: not takserver_db_setup.stat.exists
+  when: not takserver_db_data.stat.exists
