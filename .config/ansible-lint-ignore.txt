@@ -1,0 +1,4 @@
+.github/workflows/ansible_lint.yml yaml[truthy]
+.github/workflows/dependency-review.yml yaml[line-length]
+.github/workflows/dependency-review.yml yaml[truthy]
+.github/workflows/main.yml yaml[truthy]
