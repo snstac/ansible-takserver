@@ -1,0 +1,17 @@
+<?xml version='1.0' standalone='yes'?>
+<preferences>
+  <preference version="1" name="cot_streams">
+    <entry key="count" class="class java.lang.Integer">1</entry>
+    <entry key="description0" class="class java.lang.String">Example TAK Server</entry>
+    <entry key="enabled0" class="class java.lang.Boolean">true</entry>
+    <entry key="connectString0" class="class java.lang.String">tak.example.net:8089:ssl</entry>
+    <entry key="caLocation0" class="class java.lang.String">cert/truststore.p12</entry>
+    <entry key="caPassword0" class="class java.lang.String">atakatak</entry>
+    <entry key="enrollForCertificateWithTrust0" class="class java.lang.Boolean">true</entry>
+    <entry key="useAuth0" class="class java.lang.Boolean">false</entry>
+    <entry key="certificateLocation0" class="class java.lang.String">cert/client.p12</entry>
+    <entry key="clientPassword0" class="class java.lang.String">atakatak</entry>
+  </preference>
+  <preference version="1" name="com.atakmap.app_preferences">
+  </preference>
+</preferences>

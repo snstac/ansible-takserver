@@ -1,2 +1,4 @@
 ---
-# vars file for ansible-role
+takserver_rpm: SET_takserver_rpm_PLS
+takserver_gpg_key: takserver-public-gpg.key
+pgsql_repo_rpm: pgdg-redhat-repo-latest.noarch.rpm

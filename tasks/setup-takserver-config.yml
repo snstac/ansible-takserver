@@ -1,0 +1,78 @@
+# code: language=ansible
+---
+- name: Install lxml Python module.
+  ansible.builtin.dnf:
+    name: python3-lxml
+    state: present
+
+- name: Check if CoreConfig.xml exists.
+  ansible.builtin.stat:
+    path: /opt/tak/CoreConfig.xml
+  register: coreconfig_stat
+
+- name: Copy TAK Server CoreConfig.xml to /opt/tak if it does not exist.
+  ansible.builtin.copy:
+    src: "CoreConfig.xml"
+    dest: /opt/tak/CoreConfig.xml
+    mode: '0644'
+    owner: tak
+    group: tak
+  when: not coreconfig_stat.stat.exists
+
+- name: Update TAK Server CoreConfig.xml with database pass.
+  community.general.xml:
+    path: /opt/tak/CoreConfig.xml
+    xpath: /a:Configuration/a:repository/a:connection
+    value: "{{ takserver_db_pass }}"
+    attribute: password
+    namespaces:
+      a: http://bbn.com/marti/xml/config
+      b: http://www.w3.org/2001/XMLSchema-instance
+      c: file:///opt/tak/CoreConfig.xsd
+  notify: Restart takserver.
+
+- name: Update TAK Server CoreConfig.xml with database user.
+  community.general.xml:
+    path: /opt/tak/CoreConfig.xml
+    xpath: /a:Configuration/a:repository/a:connection
+    value: "{{ takserver_db_user }}"
+    attribute: username
+    namespaces:
+      a: http://bbn.com/marti/xml/config
+      b: http://www.w3.org/2001/XMLSchema-instance
+      c: file:///opt/tak/CoreConfig.xsd
+  notify: Restart takserver.
+
+- name: Update TAK Server CoreConfig.xml with TLS keystoreFile.
+  community.general.xml:
+    path: /opt/tak/CoreConfig.xml
+    xpath: /a:Configuration/a:security/a:tls
+    value: /opt/tak/certs/files/{{ takserver_cert_name | default('default_takserver_cert_name') }}.jks
+    attribute: keystoreFile
+    namespaces:
+      a: http://bbn.com/marti/xml/config
+      b: http://www.w3.org/2001/XMLSchema-instance
+      c: file:///opt/tak/CoreConfig.xsd
+  notify: Restart takserver.
+
+- name: Update TAK Server CoreConfig.xml with TLS keystorePass.
+  community.general.xml:
+    path: /opt/tak/CoreConfig.xml
+    xpath: /a:Configuration/a:security/a:tls
+    value: '{{ takserver_cert_pass | default("default_takserver_cert_pass") }}'
+    attribute: keystorePass
+    namespaces:
+      a: http://bbn.com/marti/xml/config
+      b: http://www.w3.org/2001/XMLSchema-instance
+      c: file:///opt/tak/CoreConfig.xsd
+
+- name: Update TAK Server CoreConfig.xml with TLS truststorePass.
+  community.general.xml:
+    path: /opt/tak/CoreConfig.xml
+    xpath: /a:Configuration/a:security/a:tls
+    value: '{{ takserver_ca_capass | default("default_takserver_ca_capass") }}'
+    attribute: truststorePass
+    namespaces:
+      a: http://bbn.com/marti/xml/config
+      b: http://www.w3.org/2001/XMLSchema-instance
+      c: file:///opt/tak/CoreConfig.xsd

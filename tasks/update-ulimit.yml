@@ -1,12 +1,11 @@
+# code: language=ansible
 ---
-- name: Increase PAM nofile limit to 32768
+- name: Increase PAM nofile limit to 32768.
   become: true
-  pam_limits:
+  community.general.pam_limits:
     domain: '*'
     limit_type: soft
     limit_item: nofile
     value: '32768'
-
-- name: Reload all system config settings
-  become: true
-  shell: sysctl --system
+  register: pam_limits_updated
+  notify: Reload all system config settings.

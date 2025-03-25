@@ -1,0 +1,21 @@
+# code: language=ansible
+
+- name: Permanently enable 8089, also enable it immediately if possible.
+  ansible.posix.firewalld:
+    port: 8089/tcp
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+  tags: takserver
+  when: ansible_os_family == "RedHat"
+
+- name: Permanently enable 8446, also enable it immediately if possible.
+  ansible.posix.firewalld:
+    port: 8446/tcp
+    state: enabled
+    permanent: true
+    immediate: true
+    offline: true
+  tags: takserver
+  when: ansible_os_family == "RedHat"

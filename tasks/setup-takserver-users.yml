@@ -1,0 +1,52 @@
+# code: language=ansible
+---
+- name: Create TAK Server user TLS certificates.
+  with_items: "{{ takserver_users }}"
+  ansible.builtin.command: /opt/tak/certs/makeCert-sns.sh client {{ item }}
+  args:
+    chdir: /opt/tak/certs
+    creates: /opt/tak/certs/files/{{ item }}.pem
+
+- name: Create TAK Server user account.
+  with_items: "{{ takserver_users }}"
+  ansible.builtin.command: java -jar /opt/tak/utils/UserManager.jar usermod -p {{ takserver_user_pass }} {{ item }}
+  args:
+    chdir: /opt/tak/certs
+
+- name: Create TAK Server user-cert association.
+  with_items: "{{ takserver_users }}"
+  ansible.builtin.command: java -jar /opt/tak/utils/UserManager.jar certmod /opt/tak/certs/files/{{ item }}.pem
+  args:
+    chdir: /opt/tak/certs
+
+- name: Create TAK Server admins.
+  with_items: "{{ takserver_admins }}"
+  ansible.builtin.shell: |
+    java -jar /opt/tak/utils/UserManager.jar usermod -A {{ item }}
+  args:
+    chdir: /opt/tak/certs
+
+- name: Create /usr/src/dp directory.
+  ansible.builtin.file:
+    path: /usr/src/dp
+    state: directory
+    mode: "0755"
+
+- name: Copy DP.pref to /usr/src/dp.
+  ansible.builtin.copy:
+    src: "DP.pref"
+    dest: /usr/src/dp/dp.pref
+    mode: "0644"
+
+- name: Create Data Packages for users.
+  with_items: "{{ takserver_users }}"
+  ansible.builtin.shell: |
+    rm -f /usr/src/dp/DP-{{ item }}.zip
+    mkdir -p /usr/src/dp/{{ item }}
+    cp /opt/tak/certs/files/truststore-takserver-intermediate-ca.p12 /usr/src/dp/{{ item }}/truststore.p12
+    cp /opt/tak/certs/files/{{ item }}.p12 /usr/src/dp/{{ item }}/user.p12
+    cp /usr/src/dp/DP.pref /usr/src/dp/{{ item }}/dp.pref
+    cd /usr/src/dp/{{ item }}
+    zip -r ../dp-{{ item }}.zip *.pref *.p12
+  args:
+    chdir: /usr/src/dp

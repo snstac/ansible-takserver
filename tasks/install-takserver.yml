@@ -1,10 +1,32 @@
+# code: language=ansible
 ---
-- name: Copy TAK Server RPM
-  copy:
-    src: "{{ takserver_rpm }}"
-    dest: "{{ takserver_rpm }}"
+- name: Install Java 17 OpenJDK.
+  ansible.builtin.dnf:
+    name: java-17-openjdk-devel
+    state: present
 
-- name: Install TAK Server
-  yum:
-    name: "{{ takserver_rpm }}"
-    state: latest
+- name: Copy TAK Server RPM to remote host.
+  ansible.builtin.copy:
+    src: "{{ takserver_rpm }}"
+    dest: "/usr/src/{{ takserver_rpm }}"
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Copy TAK Server GPG key to remote host.
+  ansible.builtin.copy:
+    src: "{{ takserver_gpg_key }}"
+    dest: "/usr/src/{{ takserver_gpg_key }}"
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Import TAK Server GPG key.
+  ansible.builtin.rpm_key:
+    state: present
+    key: "/usr/src/{{ takserver_gpg_key }}"
+
+- name: Install TAK Server from RPM.
+  ansible.builtin.dnf:
+    name: "/usr/src/{{ takserver_rpm }}"
+    state: present

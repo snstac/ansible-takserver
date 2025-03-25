@@ -1,13 +1,25 @@
-- name: Install TAK Server
+# code: language=ansible
+#
+# This file is the main entry point for the TAK Server role.
+# It includes all the other tasks that are needed to install and configure the TAK Server.
+#
+
+- name: Install TAK Server.
   tags: takserver
-  include_tasks: "{{ item }}"
+  ansible.builtin.include_tasks: "{{ item }}"
   loop:
     - update-ulimit.yml
-    - update-yum.yml
+    - update-dnf.yml
     - install-epel.yml
-    - update-yum.yml
-    - install-psql.yml
+    - update-dnf.yml
+    - install-postgresql.yml
     - install-takserver.yml
+    - setup-takserver-config.yml
     - setup-takserver-db.yml
     - enable-start-takserver.yml
-  when: ansible_distribution == "CentOS"
+    - setup-takserver-certs.yml
+    - setup-takserver-users.yml
+    - configure-firewall.yml
+  when: ansible_os_family == "RedHat"
+# TODO: Add support for Debian based systems.
+

@@ -28,10 +28,10 @@ This template contains the following items:
 
 ---
 
-Role Name
+TAK Server
 =========
 
-A brief description of the role goes here.
+An Ansible role for deploying & configuring a [TAK Server](https://www.tak.gov/)
 
 Requirements
 ------------
@@ -60,9 +60,9 @@ ansible-playbook tests/test.yml -i tests/inventory --extra-vars '{"var":"value"}
 License
 -------
 
-GPLv3
+Apache License, Version 2.0
 
 Author Information
 ------------------
 
-[Coopdevs](https://coopdevs.org)
+SNSTAC

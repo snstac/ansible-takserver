@@ -1,11 +1,12 @@
+# code: language=ansible
 ---
-- name: Force systemd to re-read configs
+- name: Force systemd to re-read configs.
   become: true
   ansible.builtin.systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
-- name: Start TAK Server service
+- name: Start TAK Server service.
   ansible.builtin.systemd:
     name: takserver
-    enabled: yes
+    enabled: true
     state: started

@@ -1,0 +1,37 @@
+# code: language=ansible
+- name: Replace values in the TAK Server cert metadata.
+  ansible.builtin.replace:
+    path: /opt/tak/certs/cert-metadata.sh
+    regexp: '^({{ item.key }}=).*'
+    replace: '\1"{{ item.value }}"'
+  loop:
+    - { key: 'STATE', value: '{{ takserver_ca_state | default("default_takserver_ca_state") }}' }
+    - { key: 'CITY', value: '{{ takserver_ca_city | default("default_takserver_ca_city") }}' }
+    - { key: 'ORGANIZATION', value: '{{ takserver_ca_org | default("default_takserver_ca_org") }}' }
+    - { key: 'ORGANIZATIONAL_UNIT', value: '{{ takserver_ca_ou | default("default_takserver_ca_ou") }}' }
+    - { key: 'CAPASS', value: '{{ takserver_ca_capass | default("default_takserver_ca_capass") }}' }
+    - { key: 'PASS', value: '{{ takserver_cert_pass | default("default_takserver_cert_pass") }}' }
+
+- name: Generate TAK Server CA.
+  ansible.builtin.command: /opt/tak/certs/makeRootCa.sh --ca-name {{ takserver_ca_name | default('default_takserver_ca_name') }}
+  args:
+    chdir: /opt/tak/certs
+    creates: /opt/tak/certs/files/ca.pem
+
+- name: Copy makeCert-sns.sh to /opt/tak/certs.
+  ansible.builtin.copy:
+    src: "makeCert.sh"
+    dest: /opt/tak/certs/makeCert-sns.sh
+    mode: '0755'
+
+- name: Generate TAK Server Intermediate CA.
+  ansible.builtin.command: /opt/tak/certs/makeCert-sns.sh ca {{ takserver_intermediateca_name | default('default_takserver_intermediateca_name') }}
+  args:
+    chdir: /opt/tak/certs
+    creates: /opt/tak/certs/files/{{ takserver_intermediateca_name | default('default_takserver_intermediateca_name') }}.pem
+
+- name: Generate TAK Server TLS certificate.
+  ansible.builtin.command: /opt/tak/certs/makeCert-sns.sh server {{ takserver_cert_name | default('default_takserver_cert_name') }}
+  args:
+    chdir: /opt/tak/certs
+    creates: /opt/tak/certs/files/{{ takserver_cert_name | default('default_takserver_cert_name') }}.jks

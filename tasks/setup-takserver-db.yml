@@ -1,9 +1,14 @@
+# code: language=ansible
 ---
-- name: Check if TAK PostgreSQL Database exists
-  stat:
-    path: /var/lib/pgsql/10/data/
-  register: takserver_db_data
+- name: Setup TAK PostgreSQL Database.
+  ansible.builtin.command: /opt/tak/db-utils/takserver-setup-db.sh
+  args:
+    creates: /var/lib/pgsql/10/data/PG_VERSION
 
-- name: Setup TAK PostgreSQL Database
-  shell: /opt/tak/db-utils/takserver-setup-db.sh
-  when: not takserver_db_data.stat.exists
+- name: Set PostgreSQL password for TAK Server.
+  become: true
+  community.postgresql.postgresql_user:
+    name: "{{ takserver_db_user }}"
+    password: "{{ takserver_db_pass }}"
+  become_user: postgres
+  

@@ -1,0 +1,53 @@
+# code: language=ansible
+---
+- name: Install PostgreSQL repo RPM (RHEL 8).
+  ansible.builtin.dnf:
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: present
+    disable_gpg_check: true
+  when: ansible_distribution_major_version == "8" and ansible_distribution == "RedHat"
+  register: pgsql_repo_rpm_installed
+
+- name: Install PostgreSQL repo RPM (RHEL 9).
+  ansible.builtin.dnf:
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: present
+    disable_gpg_check: true
+  when: ansible_distribution_major_version == "9"
+  register: pgsql_repo_rpm_installed
+
+- name: Disable default PostgreSQL DNF module.
+  community.general.ini_file:
+    path: /etc/dnf/modules.d/postgresql.module
+    section: postgresql
+    option: state
+    value: disabled
+    no_extra_spaces: true
+    mode: "0644"
+    owner: root
+    group: root
+  register: postgresql_dnf_module_disabled
+
+- name: Update DNF cache.
+  tags: always
+  ansible.builtin.dnf:
+    update_cache: true
+
+- name: Install DNF Plugins.
+  ansible.builtin.dnf:
+    name:
+      - dnf-plugins-core
+      - epel-release
+    state: present
+  when: ansible_distribution == "Rocky"
+
+# "crb", fka "powertools": https://developers.redhat.com/blog/2018/11/15/introducing-codeready-linux-builder
+- name: Enable crb repository
+  ansible.builtin.command: dnf config-manager --set-enabled crb
+  when: ansible_distribution == "Rocky"
+  changed_when: false
+
+- name: Update DNF cache.
+  tags: always
+  ansible.builtin.dnf:
+    update_cache: true
