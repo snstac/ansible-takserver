@@ -1,5 +1,10 @@
 # code: language=ansible
 ---
+- name: Install psycopg2 Python module.
+  ansible.builtin.dnf:
+    name: python3-psycopg2
+    state: present
+
 - name: Setup TAK PostgreSQL Database.
   ansible.builtin.command: /opt/tak/db-utils/takserver-setup-db.sh
   args:
@@ -11,4 +16,3 @@
     name: "{{ takserver_db_user }}"
     password: "{{ takserver_db_pass }}"
   become_user: postgres
-  

@@ -8,5 +8,6 @@
 
 - name: Reload all system config settings.
   become: true
-  ansible.builtin.command:
-    cmd: sysctl --system
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    reload: true

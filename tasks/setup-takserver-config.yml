@@ -76,3 +76,6 @@
       a: http://bbn.com/marti/xml/config
       b: http://www.w3.org/2001/XMLSchema-instance
       c: file:///opt/tak/CoreConfig.xsd
+
+- name: Flush handlers.
+  meta: flush_handlers
